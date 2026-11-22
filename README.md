@@ -2,7 +2,7 @@
 
 Wydania aplikacji **MeshCom kocel💣** (Android) i firmware **MeshCom RM** (oparty na MeshCom 4.40a) dla testerów.
 
-👉 **Pliki do pobrania:** folder [wydania](wydania) — najnowsze: [4.40a-rm5 + aplikacja 0.9.34-mod.36](wydania/4.40a-rm5). Opis zmian w zakładce [Releases](../../releases).
+👉 **Pliki do pobrania: zakładka [Releases](../../releases)** — najnowsze wydanie jest na górze, pliki w sekcji **Assets**.
 
 - **Aplikacja:** `MeshCom-RM-Mod.apk` — zainstaluj na Androidzie (zezwól na instalację z tego źródła).
 - **Firmware:** pliki z nazwą płytki:
