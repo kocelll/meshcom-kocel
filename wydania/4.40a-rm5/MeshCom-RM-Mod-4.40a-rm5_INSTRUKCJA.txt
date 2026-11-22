@@ -1,0 +1,272 @@
+kocel💣 MeshCom RM Mod — firmware 4.40a-rm5 (22.11.2026)
+========================================================
+
+Firmware dla testerów aplikacji MeshCom kocel💣 (dawniej MeshCom RM Mod, tylko Android). Oparty na oficjalnym
+MeshCom 4.40a (v4.40a.11.07), z takimi zmianami:
+
+1. Źródło odbioru: radio mówi aplikacji, czy wiadomość przyszła z eteru
+   (z siłą sygnału i SNR ostatniego odcinka), czy z serwera MeshCom.
+   Aplikacja pokazuje przy wiadomości znaczek Radio / Internet,
+   trasę krok po kroku i jej długość.
+2. 16 grup zamiast 6. Grupy 1–6 działają jak w oficjalnym firmware,
+   grupy 7–16 są dodatkowe.
+3. NOWE w rm2: domyślny region PL zamiast EU8. Radio po pełnej instalacji
+   (albo po --cleanflash) startuje od razu z regionem PL: MeshCom 433,175 MHz,
+   LoRa-APRS 434,855 MHz (SF9, BW 125 kHz, CR 4/7) na płytkach ESP32 i ESP32-S3.
+   Radio, które ma już ustawiony region (aktualizacja), zachowuje swój.
+   Płytki nRF52 (RAK4631, T-Echo, T114) nadają LoRa-APRS na 433,775 MHz.
+4. NOWE w rm3: APRS-IS (aprs.fi) w radiu — tylko ESP32 / ESP32-S3 z internetem
+   (gateway przez Wi-Fi). Radio samo wysyła na aprs.fi swoją pozycję, a w trybie
+   iGate także pozycje stacji usłyszanych przez LoRa (nigdy ramek z serwera
+   MeshCom, jedna stacja najwyżej raz na minutę). Telefon niepotrzebny.
+   Polecenia: --aprsispw <passcode>, --aprsis off|own|all, --aprsisset (stan).
+   W aplikacji (0.9.34-mod.18 lub nowszej): Opcje → Przycisk użytkownika →
+   „Szybkie ustawienie stacji” → „W domu, Wi-Fi radia: MeshCom + aprs.fi”.
+5. NOWE w rm3: bramka MeshCom przez internet telefonu działa w obie strony.
+   Aplikacja przekazuje radiu wiadomości z serwera MeshCom, a radio pokazuje je
+   w czacie i nadaje przez LoRa — jak gateway z Wi-Fi. Wszystkie płytki,
+   także nRF52 (RAK4631, T-Echo, T114). Ustawienie: „W terenie, …” albo
+   „W domu przez telefon” w Szybkim ustawieniu stacji.
+6. NOWE w rm4: powiadomienia w radiu (ESP32 / ESP32-S3). Radio miga diodą
+   i/lub piszczy buzzerem przy wiadomości prywatnej (DM) do Ciebie oraz przy
+   alarmie — wiadomości zaczynającej się od „EMC” lub „SOS”. Po potwierdzeniu
+   Twojej DM (ACK) ekran radia pokazuje „ACK OK” ze znakiem odbiorcy.
+   W aplikacji: Start → „Powiadomienia radia”. Polecenia: --notify dm|emc|led|ack on|off,
+   --notify buzzer <GPIO>|off, --notify test dm|emc, --notify (stan).
+7. NOWE w rm4: tryb aktualizacji (OTA) nie zrywa się na telefonie — sieć Wi-Fi radia
+   odpowiada na testy łączności Androida i iPhone'a, więc telefon nie przełącza
+   wysyłania na dane komórkowe. Najwygodniej aktualizować prosto z aplikacji.
+8. NOWE w rm4: automatyczna aktualizacja z internetu (--update install, przycisk
+   „Install” na stronie radia) jest wyłączona — wgrałaby oficjalny MeshCom bez zmian RM.
+9. NOWE w rm4: płytka Faketec v4 (Pro Micro / nice!nano nRF52840 + Heltec HT-RA62
+   + OLED 0.96" SSD1306). Port przygotował jeden z testerów, dołączony do rm4.
+   W sieci i w aplikacji radio przedstawia się jako RAK4631 (HWID 9),
+   w Bluetooth jako „RAK4631 FakeTec”. Plik: „… - Faketec v4 (…).uf2”.
+10. NOWE w rm5: dźwięki powiadomień (ESP32 / ESP32-S3). Radio daje znać także
+   o wiadomościach w Twoich grupach i ogólnych. Buzzer gra jedną z melodii:
+   3 piknięcia, Morse „R”, Morse „QSL”, ding-dong, rosnąca, jeden długi ton —
+   albo milczy. Buzzer (aktywny lub pasywny) można dolutować do wolnego GPIO
+   każdej płytki ESP32. T-Deck gra plik mp3 z karty SD, Morse albo nic.
+   W aplikacji: Start → „Powiadomienia radia” (0.9.34-mod.31 lub nowsza).
+   Polecenia: --notify grp|all on|off, --notify melody 0-5, --notify test melody <n>,
+   --audio msg|start <plik>|morse|off, --audio test msg|start (T-Deck).
+11. NOWE w rm5: limit mocy dla modułów Ebyte E22 (płytki „Ebyte E22 …”
+   i „ESP32 LoRa APRS E22”). Wybierz moduł: M22S, M30S albo M33S — radio samo
+   ogranicza wysterowanie układu SX126x, żeby nie przesterować ani nie spalić
+   wzmacniacza: M22S i M30S do 22 dBm, M33S do 9 dBm (na antenie ok. 33 dBm).
+   Dopóki moduł nie jest wybrany, radio nadaje ostrożnie (9 dBm wysterowania).
+   Po aktualizacji wybierz swój moduł. W aplikacji: Start → „Moduł E22”.
+   Polecenie: --e22pa 22|30|33 (0 = nie wybrany).
+12. NOWE w rm5: kalibracja pomiaru baterii (ESP32 / ESP32-S3). Zmierz miernikiem
+   napięcie na akumulatorze, wpisz w aplikacji (Start → „Kalibracja baterii”) —
+   radio liczy napięcie i procent z poprawką (do ±20%).
+   Polecenia: --battcal <V> (np. --battcal 4.05), --battcal reset.
+13. NOWE w rm5: rewizja RM widoczna wszędzie — ekran startowy („FW 4.40a-rm5”),
+   --info, strona WWW radia („Meshcom 4.40a-rm5 (kocel RadioMesh)”), aplikacja.
+   Numer MeshCom 4.40a zostaje bez zmian (serwer, APRS i oficjalna aplikacja go
+   porównują). Sprawdzanie aktualizacji przez internet (--update check) patrzy
+   w wydania kocel💣, nie w oficjalny MeshCom. Nazwy plików mają wersję:
+   „kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka> - …”.
+
+Zgodność z oficjalnym MeshCom
+- W eterze nic się nie zmienia: radio rozmawia z każdym MeshCom 4.x.
+- Oficjalna aplikacja działa, widzi i zapisuje grupy 1–6, nie kasuje 7–16.
+- Powrót na oficjalny firmware zachowuje grupy 1–6 (7–16 są ignorowane).
+- Nowe funkcje widać w aplikacji MeshCom kocel💣 (Android), zalecana 0.9.34-mod.36
+  lub nowsza.
+
+Który plik wybrać
+Nazwy płytek są takie same jak w oficjalnym instalatorze MeshCom
+(https://esptool.oevsv.at). Każdy plik nazywa się:
+  kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka> - <rodzaj>
+Przykład: kocel💣 MeshCom RM Mod 4.40a-rm5 - Heltec V3 - pelna instalacja.bin
+Weź plik z dokładnie Twoją płytką. T-Beam jest w trzech wersjach radia:
+„T-Beam (default) SX1278” (na układzie LoRa brak napisu, zwykle „TTGO”),
+„T-Beam SX1262” i „T-Beam SX1268” (napis na układzie LoRa). Zły plik zwykle
+nie uszkodzi radia, ale radio nie zadziała poprawnie — wtedy wgraj właściwy.
+
+Rodzaj pliku:
+- … - pelna instalacja.bin   — ESP32 / ESP32-S3, pełna instalacja od adresu 0x0.
+                                Kasuje ustawienia radia (znak, Wi-Fi, grupy).
+- … - aktualizacja.bin       — ESP32 / ESP32-S3, sam program pod adres 0xC0000.
+                                Zostawia ustawienia. Tylko gdy na radiu jest już
+                                MeshCom 4.x (oficjalny albo ten), nie z Meshtastic.
+- … .uf2                     — RAK4631, Faketec v4, T-Echo, Heltec T114 (nRF52840).
+- … - aktualizacja DFU.zip   — to samo dla nRF52, aktualizacja przez nRF DFU.
+- kocel💣 MeshCom RM Mod 4.40a-rm5 - SHA256.txt — sumy kontrolne plików.
+
+Płytki (nazwa w pliku → co to jest)
+  Ebyte (płytki DIY):
+    Ebyte E22 433 MHz          ESP32 DevKitC + Ebyte E22-400M30S (SX1268), DIY
+    Ebyte E22 868-915 MHz      ESP32 DevKitC + Ebyte E22-900M30S (SX1262), DIY
+    Ebyte E22 S3 433 MHz       ESP32-S3 DevKitC-1 N16R8 + E22-400M30S (SX1268), DIY
+    Ebyte E22 S3 868-915 MHz   ESP32-S3 DevKitC-1 N16R8 + E22-900M30S (SX1262), DIY
+    Ebyte E22 XML              ESP32 DevKitC + E22-400M (SX1268), wersja XML, DIY
+  Heltec:
+    Heltec V2                  Heltec-WiFi-LoRa32-V2 — ESP32, SX1276-SX1278
+    Heltec V3                  Heltec-WiFi-LoRa32-V3 — ESP32-S3, SX1262
+    Heltec V4                  Heltec-WiFi-LoRa32-V4 — ESP32-S3, SX1262
+    Heltec E290                Heltec-Vision-Master-E290 — ESP32-S3, SX1262
+    Heltec E290 OTP            Heltec-Vision-Master-E290-OTP — ESP32-S3, SX1262
+    Heltec E213                Heltec-Vision-Master-E213 — ESP32-S3, SX1262
+    Heltec Wireless Stick V3   Heltec-Wireless-Stick-Lite-V3 — ESP32-S3, SX1262
+    Heltec Wireless Tracker    Heltec-Wireless-Tracker — ESP32-S3, SX1262
+    Heltec Wireless Paper      Heltec-Wireless-Paper — ESP32-S3, SX1262
+    Heltec T114                Heltec-Mesh-Node-T114 — nRF52840, SX1262
+  TTGO / LilyGO:
+    T-LoRa                     LilyGO-T3-LoRa32-V2.1-1.6 — ESP32, SX1276-SX1278
+    T-Deck                     LilyGO-T-Deck — ESP32-S3, SX1262
+    T-Deck Plus                LilyGO-T-Deck-Plus — ESP32-S3, SX1262
+    T-Deck Pro                 LilyGO-T-Deck-Pro — ESP32-S3, SX1262
+    T-Echo                     LilyGO-T-Echo — nRF52840, SX1262
+    T-Connect Pro              LilyGO-T-Connect-Pro — ESP32-S3, SX1262
+    T3 S3 V1_3 SX1262          LilyGO-T3-S3-V1.3 — ESP32-S3, SX1262
+    T-ETH-ELITE_1262           LilyGO-T-ETH-Elite — ESP32-S3, SX1262
+  T-Beam:
+    T-Beam (default) SX1278    LilyGO-T-Beam-v1.x — ESP32, SX1276-SX1278
+    T-Beam SX1268              LilyGO-T-Beam-v1.x — ESP32, SX1268
+    T-Beam SX1262              LilyGO-T-Beam-v1.x — ESP32, SX1262
+    T-Beam Supreme             LilyGO-T-Beam-Supreme — ESP32-S3, SX1262
+    T-Beam 1W                  LilyGO-T-Beam-1W — ESP32-S3, SX1262
+  RAK:
+    RAK4631                    RAK-WisBlock-RAK4631 — nRF52840, SX1262
+  Faketec (spoza oficjalnej listy):
+    Faketec v4 (Pro Micro nRF52840 + HT-RA62)
+                               Pro Micro / nice!nano nRF52840 + Heltec HT-RA62 (SX1262)
+  ESP32 LoRa APRS:
+    ESP32 LoRa APRS E22        DIY-ESP32-LoRa-APRS + E22-400M — ESP32, SX1268
+    ESP32 LoRa APRS RA01       DIY-ESP32-LoRa-APRS + Ra-01 — ESP32, SX1278
+
+INSTALACJA KABLEM — ESP32 i ESP32-S3, Windows (zalecane, zachowuje ustawienia)
+W folderze jest skrypt „kocel💣 MeshCom RM Mod 4.40a-rm5 - wgraj-usb.ps1”. Robi kopię ustawień
+radia (znak, Wi-Fi, grupy), wgrywa „pelna instalacja” i przywraca ustawienia.
+1. Pobierz do jednego folderu: skrypt wgraj-usb.ps1 i plik „… - <płytka> - pelna instalacja.bin”.
+2. Potrzebny program esptool: pobierz „esptool-…-windows-amd64.zip” ze strony
+   https://github.com/espressif/esptool/releases , rozpakuj i włóż esptool.exe do tego folderu.
+   (Kto ma PlatformIO albo Pythona z esptool — skrypt sam go znajdzie.)
+3. Podłącz radio kablem USB. W tym folderze: Shift + prawy klik → „Otwórz w terminalu”
+   (PowerShell) i wpisz:
+     powershell -ExecutionPolicy Bypass -File ".\kocel💣 MeshCom RM Mod 4.40a-rm5 - wgraj-usb.ps1"
+   Skrypt zapyta o port (np. COM27) i numer pliku. Od czystych ustawień: dodaj -KasujUstawienia.
+4. Jeśli stoi na „Connecting…”: przytrzymaj BOOT, krótko naciśnij RST, puść BOOT.
+
+INSTALACJA — ESP32 i ESP32-S3 (przeglądarka, bez instalowania programów)
+1. Komputer z Chrome albo Edge. Radio podłączone kablem USB z transmisją danych.
+2. Otwórz https://espressif.github.io/esptool-js/
+3. Baudrate: 460800. Kliknij Connect i wybierz port radia
+   (zwykle CP210x, CH340 albo CH9102; przy T-Deck / T3-S3 „USB JTAG/serial”).
+   Nie łączy się? Przytrzymaj BOOT (PRG), krótko naciśnij RST, puść BOOT, spróbuj ponownie.
+4. Pełna instalacja (nowe radio, Meshtastic albo inny firmware):
+   - kliknij Erase Flash i poczekaj na koniec,
+   - Flash Address: 0x0, plik: kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka> - pelna instalacja.bin,
+   - kliknij Program.
+   Aktualizacja z zachowaniem ustawień (na radiu jest już MeshCom 4.x):
+   - NIE klikaj Erase Flash,
+   - Flash Address: 0xC0000, plik: kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka> - aktualizacja.bin,
+   - kliknij Program.
+5. Po „Leaving...” naciśnij RST na radiu (albo odłącz i podłącz kabel).
+6. Po pełnej instalacji połącz radio z aplikacją MeshCom kocel💣 i w Opcjach
+   → Szybki start · Polska wpisz znak i dotknij „Zastosuj profil Polska”
+   (ustawia znak, region PL, serwer SP, czas Warszawa). Grupy ustawiasz
+   w Czat → Grupy w radiu.
+   Radio zgłasza się w Bluetooth jako MC-xxxx-XX0XXX-00, PIN 000000.
+
+INSTALACJA — RAK4631, Faketec v4, T-Echo, Heltec T114 (nRF52)
+1. Podłącz radio kablem USB do komputera.
+2. Dwa razy szybko naciśnij RST. Pojawi się dysk USB (np. RAK4631, TECHOBOOT, HT-n5262).
+3. Skopiuj na ten dysk plik kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka>.uf2.
+4. Radio samo się zrestartuje (komunikat o błędzie kopiowania na macOS jest normalny).
+   Ustawienia zwykle zostają.
+   Faketec v4: przy pierwszym starcie radio samo przestawia piny NFC na zwykłe
+   i robi jeden restart — to normalne.
+
+AKTUALIZACJA BEZ KABLA (OTA) — gdy na radiu jest już MeshCom 4.x (oficjalny albo rm)
+Ustawienia (znak, Wi-Fi, region, pozycja) i grupy 1–6 zostają.
+
+ESP32 i ESP32-S3 — z aplikacji MeshCom kocel💣 (0.9.34-mod.28 lub nowsza, Android 10+)
+1. Połącz radio w aplikacji. Start → „Aktualizacja firmware”.
+2. Krok 1: dotknij przycisku ze swoją płytką — aplikacja pobierze plik „aktualizacja”
+   (potrzebny internet). T-Beam V1.2: wybierz wariant, który masz wgrany (zwykle SX1278).
+3. Krok 2: „Uruchom tryb aktualizacji OTA” → „Tak, uruchom”. Na ekranie radia pojawi się
+   „OTA…”, aplikacja straci Bluetooth (tak ma być).
+4. Krok 3: „Wyślij przez sieć radia” — Android zapyta o połączenie z siecią radia (nazwa = znak),
+   zgódź się. Pasek pokazuje postęp, 1–2 minuty. Radio z domowym Wi-Fi: „Wyślij przez domowe Wi-Fi”.
+5. Po ok. 30 s połącz radio (kafelek Radio) i sprawdź wersję.
+- Przerwane wysyłanie: radio czeka w trybie aktualizacji, wyślij jeszcze raz.
+  Nie naciskaj na stronie radia „Cancel – Boot into App”.
+- Radio nie przechodzi w OTA (aplikacja to napisze po 15 s): brak części safeboot —
+  zrób raz pełną instalację kablem.
+
+ESP32 i ESP32-S3 — przez przeglądarkę (zapas)
+1. Pobierz plik „kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka> - aktualizacja.bin”.
+2. Uruchom tryb OTA jak wyżej (albo w konsoli --ota-update).
+3. Radio z Wi-Fi: otwórz w przeglądarce adres IP z ekranu radia. Radio bez Wi-Fi:
+   połącz się z jego siecią i otwórz http://192.168.4.1 . Na telefonie wyłącz dane
+   komórkowe i wybierz „zostań połączony”; nie wygaszaj ekranu.
+4. Wybierz plik i wyślij; radio samo się zrestartuje.
+- Błąd „bootloader_dio … renew with the web flasher”: stary bootloader — zrób raz pełną
+  instalację kablem.
+- Nie wgrywaj przez OTA pliku „pelna instalacja” — tylko „aktualizacja”.
+
+RAK4631, T-Echo, Heltec T114 (nRF52) — przez Bluetooth (DFU)
+1. Zainstaluj aplikację Nordic „nRF Device Firmware Update” (albo nRF Connect).
+2. Rozłącz radio w aplikacji MeshCom kocel💣.
+3. W aplikacji Nordic wybierz plik „kocel💣 MeshCom RM Mod 4.40a-rm5 - <płytka> - aktualizacja DFU.zip”,
+   potem swoje radio, i uruchom aktualizację. Radio samo się zrestartuje.
+
+UWAGA: automatyczna aktualizacja z internetu (--update install, „Install” na stronie radia)
+pobiera oficjalny MeshCom — od rm4 jest zablokowana (komunikat „rm_firmware”). Na radiu
+z rm3 lub starszym nie używaj jej: radio straciłoby grupy 7–16 i APRS-IS w radiu.
+Komunikat „jest nowa wersja” można zignorować.
+
+Jak sprawdzić, że działa
+- W aplikacji MeshCom kocel💣: Czat → Grupy → „Grupy w radiu” pokazuje 16 pól.
+- Przy odebranej wiadomości znaczek Radio z sygnałem (np. −61 dBm / 6 dB)
+  albo Internet; w „Opcjach wiadomości” trasa i jej długość.
+- Konsola (port szeregowy 115200): --info pokazuje „4.40a-rm5”, „build: Nov 22 2026” i „CTRY PL”,
+  --getgrcx pokazuje grupy 7–16, --setgrcx a;b;c… je ustawia.
+
+Co przetestować i zgłosić
+- rm5: Start → „Powiadomienia radia” — melodie buzzera („Test”), wiadomości z grup
+  i ogólne (włącz/wyłącz), T-Deck: mp3 z karty, Morse, cisza.
+- rm5, płytki E22: Start → „Moduł E22” — wybierz moduł; czy moc w raporcie stacji
+  się zgadza i czy moduł się nie grzeje nadmiernie.
+- rm5: Start → „Kalibracja baterii” — czy napięcie i procent zgadzają się z miernikiem.
+- rm5: strona WWW radia i ekran startowy pokazują „4.40a-rm5”.
+- rm4: aktualizacja OTA z aplikacji (Start → Aktualizacja firmware, kroki 1–3) — czy
+  przechodzi do końca; na jakim telefonie i Androidzie.
+- rm4: Start → „Powiadomienia radia” → „Test DM” i „Test alarmu” — czy miga dioda
+  (np. T-Beam: czerwona LED), buzzer na podanym GPIO; „ACK OK” na ekranie po Twojej DM.
+- rm4: wgrywanie kablem skryptem wgraj-usb.ps1 — czy ustawienia zostają.
+- rm3, ESP32 z Wi-Fi: „W domu, Wi-Fi radia: MeshCom + aprs.fi” w aplikacji, potem
+  „Odczytaj stan radia” (karta Bramka MeshCom i APRS) — ma być „verified”,
+  a stacja widoczna na aprs.fi (z opóźnieniem do kilku minut).
+- rm3, bramka przez telefon: licznik „z serwera do radia” rośnie, wiadomości
+  z serwera są w czacie, a inne radio w pobliżu słyszy je przez LoRa.
+- Po pełnej instalacji: czy radio startuje z regionem PL (Opcje → Region radiowy).
+- Czy płytka się instaluje i startuje (podaj nazwę płytki).
+- Znaczek Radio / Internet i sygnał przy wiadomościach.
+- Grupy 7–16: zapis w aplikacji, wiadomości z tych grup na liście rozmów.
+- Bramki (gateway): czy wiadomości z grup 7–16 przychodzą przez internet.
+  To jeszcze niesprawdzone — serwer MeshCom może ich nie odsyłać.
+- Ekran: na jednym nowym Heltec V3 OLED nie odpowiada (sprawdzamy, czy to wada
+  egzemplarza). Napisz, jeśli Twój ekran działa albo nie.
+
+Licencja
+- Firmware jest na licencji MIT (plik „kocel💣 MeshCom RM Mod 4.40a-rm5 - LICENSE.txt” w tym folderze):
+  oryginał MeshCom © 2024 icssw.org, zmiany RM © 2026 kocel💣 (RadioMesh).
+  Wolno używać, kopiować, zmieniać i rozpowszechniać, z zachowaniem informacji
+  o autorach i tekstu licencji. Bez gwarancji.
+- Biblioteki wbudowane w firmware (np. RadioLib, platforma Arduino ESP32,
+  biblioteki ekranów i Bluetooth) mają własne licencje.
+
+Powrót na oficjalny MeshCom
+- https://esptool.oevsv.at (oficjalny instalator w przeglądarce) BEZ zaznaczonej opcji
+  ERASE — ustawienia i grupy 1–6 zostają; z ERASE radio trzeba ustawić od nowa.
+- Albo OTA jak wyżej z oficjalnym plikiem firmware.bin, a dla nRF52 plik .uf2
+  z oficjalnego wydania.
+
+Aplikacja
+- MeshCom kocel💣 instaluje się obok oryginalnej aplikacji MeshCom (nie nadpisuje jej).
+  Oryginał zostaje ze swoimi danymi; ustawienia radia są w radiu i wczytają się same.
+  Radio łączy się naraz tylko z jedną aplikacją.
